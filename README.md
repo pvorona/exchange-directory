@@ -1,94 +1,56 @@
+Hi Pavel,
 
+Thanks for showing an interest in joining our team & speaking with myself today!
 
-# StakefishAssignment
+We are excited to get to know your technical skills better and would like to invite you to complete an assignment related to our area of work - blockchain.
 
-This project was generated using [Nx](https://nx.dev).
+This exercise is designed to assess how you approach tasks required in your position as a frontend developer at stakefish. Your time is important to us, and we don’t expect you to spend more time than available on this task. We value quality over feature completeness. We are interested not just in your final results, but also in seeing how you work. Please include useful git commit messages, and use comments where you think your code may be unclear.
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+The Task:
 
-🔎 **Smart, Fast and Extensible Build System**
+Using the Coingecko public API (https://www.coingecko.com/en/api), build an application that will serve as a directory of cryptocurrency exchanges. The main page should be a list with the first ten exchanges with some high-level information (name, country, URL, logo, trust rank).
 
-## Adding capabilities to your workspace
+When the user clicks on an exchange, show its details on a separate page. Included in those details should be the name, country, trust rank, logo, year of establishment, social media links, description, and a back-to-main-page button.
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+Tech Stack:
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+As long as the solution is built using React, you can use any other tools you like.
 
-Below are our core plugins:
+Browser Support:
 
-- [React](https://reactjs.org)
-  - `npm install --save-dev @nrwl/react`
-- Web (no framework frontends)
-  - `npm install --save-dev @nrwl/web`
-- [Angular](https://angular.io)
-  - `npm install --save-dev @nrwl/angular`
-- [Nest](https://nestjs.com)
-  - `npm install --save-dev @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `npm install --save-dev @nrwl/express`
-- [Node](https://nodejs.org)
-  - `npm install --save-dev @nrwl/node`
+You should test your work in the latest version of Chrome. If you use any features that are not supported by common browsers or IE 11, you should mention these features and how you would provide a suitable fallback experience if your code does not do so already.
 
-There are also many [community plugins](https://nx.dev/community) you could add.
+Dependencies:
 
-## Generate an application
+Please use `npm` for dependency management.
 
-Run `nx g @nrwl/react:app my-app` to generate an application.
+You can use any 3rd-party libraries as necessary or desired, but we prefer the use of minimal dependencies.
 
-> You can use any of the plugins above to generate applications as well.
+Coding Standard:
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+Your styles should be responsive and mobile-first. Please use ESLint and Prettier to format your code.
 
-## Generate a library
+Evaluation:
 
-Run `nx g @nrwl/react:lib my-lib` to generate a library.
+Your React app should build without errors. If there are extra steps required to get it to compile, they should be covered in your README.md.
+Your commit history is important to us. Try to make meaningful commit messages that show your progress.
+Your code should be easy to understand and communicative (e.g. in comments, variable names, etc). Clean code principles, componentization, appropriate test coverage, and code documentation are key factors and are highly valued.
+Bonus points for testing (stakefish ❤️ end-to-end testing with Cypress).
 
-> You can also use any of the plugins above to generate libraries as well.
+Please aim to return to us your solution, including all the files you would like to share within 3 business days.
 
-Libraries are shareable across libraries and applications. They can be imported from `@stakefish-assignment/mylib`.
+If you have any questions or concerns regarding the timeline, please feel free to contact us.
 
-## Development server
+For public repositories, we ask that you make it private once you have received feedback. If you decide to make the repository private immediately after competition, please ensure you allow access to all of the below usernames:
 
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
+'mbaranovski', 'yzhuang', 'apple-juice', 'vince19972', 'mateuszsokola'
 
-## Code scaffolding
+We hope you enjoy this and happy coding!
 
-Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.
+Best,
 
-## Build
+Ben Clark
 
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+stakefish
 
-## Running unit tests
-
-Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `nx e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev) to learn more.
-
-
-
-## ☁ Nx Cloud
-
-### Distributed Computation Caching & Distributed Task Execution
-
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
+- Candidates are strictly prohibited from sharing confidential information with others, including, but not limited to, assignments provided during the interview process, private company statistics, and upcoming product/project plans. stakefish, and its related entities, retains the right to seek all legal remedies, including litigation, against any candidate who shares such information.
