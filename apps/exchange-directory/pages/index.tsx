@@ -1,82 +1,57 @@
 import { useEffect, useState } from 'react';
-import styles from './index.module.scss';
-import { ensureNever } from '../utils';
+import { Exchange, Loadable, LoadableStatus, ensureNever } from '../utils';
 import { useRouter } from 'next/router';
 
-function listExchanges() {
+function listExchanges(init?: RequestInit) {
   return fetch('https://api.coingecko.com/api/v3/exchanges?per_page=10', {
     headers: {
       accept: 'application/json',
     },
+    ...init,
   });
 }
 
-type Exchange = {
-  id: string;
-  name: string;
-  country: string;
-  url: string;
-  image: string;
-  trust_score_rank: number;
-};
-
-type ExchangeList =
-  | {
-      status: ExchangeListStatus.Idle;
-    }
-  | {
-      status: ExchangeListStatus.Loading;
-    }
-  | {
-      status: ExchangeListStatus.Completed;
-      data: Exchange[];
-    }
-  | {
-      status: ExchangeListStatus.Failed;
-      error: unknown;
-    };
-
-enum ExchangeListStatus {
-  Idle,
-  Loading,
-  Completed,
-  Failed,
-}
+type ExchangeList = Loadable<readonly Exchange[]>;
 
 export function Index() {
   const [exchangeList, setExchangeList] = useState<ExchangeList>({
-    status: ExchangeListStatus.Idle,
+    status: LoadableStatus.Idle,
   });
 
   useEffect(() => {
-    setExchangeList({ status: ExchangeListStatus.Loading });
-    // TODO: Abort fetch on unmount
+    setExchangeList({ status: LoadableStatus.Loading });
 
-    listExchanges()
+    const controller = new AbortController();
+
+    listExchanges({ signal: controller.signal })
       .then((response) => response.json())
       .then((data) => {
-        setExchangeList({ status: ExchangeListStatus.Completed, data });
+        setExchangeList({ status: LoadableStatus.Completed, data });
       })
       .catch((error) => {
-        setExchangeList({ status: ExchangeListStatus.Failed, error });
+        setExchangeList({ status: LoadableStatus.Failed, error });
       });
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const router = useRouter();
 
-  if (exchangeList.status === ExchangeListStatus.Idle) {
+  if (exchangeList.status === LoadableStatus.Idle) {
     return null;
   }
 
-  if (exchangeList.status === ExchangeListStatus.Loading) {
+  if (exchangeList.status === LoadableStatus.Loading) {
     return <div>Loading...</div>;
   }
 
-  if (exchangeList.status === ExchangeListStatus.Failed) {
+  if (exchangeList.status === LoadableStatus.Failed) {
     return <div>Error: {exchangeList.error}</div>;
   }
 
-  if (exchangeList.status === ExchangeListStatus.Completed) {
+  if (exchangeList.status === LoadableStatus.Completed) {
     return (
       <table className="table">
         <thead>
@@ -88,7 +63,7 @@ export function Index() {
         {exchangeList.data.map((exchange) => (
           <tr
             key={exchange.id}
-            className="hover focus-visible:bg-[hsl(var(--b2))] outline-none"
+            className="hover focus-visible:bg-[hsl(var(--b2))] outline-none cursor-pointer"
             onClick={() => router.push(`/exchanges/${exchange.id}`)}
             onKeyDown={(event) => {
               if ('Enter' === event.key) {
@@ -105,7 +80,7 @@ export function Index() {
                 </div>
               </div>
 
-              <span className=''>{exchange.name}</span>
+              {exchange.name}
             </td>
             <td>{exchange.country}</td>
             <td>
@@ -124,13 +99,6 @@ export function Index() {
       </table>
     );
   }
-
-  // id: string;
-  // name: string;
-  // country: string;
-  // url: string;
-  // image: string;
-  // trust_score_rank: number;
 
   ensureNever(exchangeList);
 }
