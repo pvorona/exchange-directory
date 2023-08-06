@@ -1,7 +1,6 @@
 {
   "version": 2,
   "projects": {
-    "exchange-directory": "apps/exchange-directory",
-    "exchange-directory-e2e": "apps/exchange-directory-e2e"
+    "exchange-directory": "apps/exchange-directory"
   }
 }
