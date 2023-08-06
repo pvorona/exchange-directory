@@ -8,7 +8,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
       <Head>
         <title>Welcome to exchange-directory!</title>
       </Head>
-      <main className="app">
+      <main className="h-full">
         <Component {...pageProps} />
       </main>
     </>

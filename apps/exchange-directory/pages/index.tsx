@@ -1,42 +1,25 @@
-import { useEffect, useState } from 'react';
-import { Exchange, Loadable, LoadableStatus, ensureNever } from '../utils';
+import { Exchange, LoadableStatus, ensureNever, useQuery } from '../utils';
 import { useRouter } from 'next/router';
 
-function listExchanges(init?: RequestInit) {
-  return fetch('https://api.coingecko.com/api/v3/exchanges?per_page=10', {
-    headers: {
-      accept: 'application/json',
-    },
-    ...init,
-  });
+async function listExchanges(init?: RequestInit): Promise<readonly Exchange[]> {
+  const response = await fetch(
+    'https://api.coingecko.com/api/v3/exchanges?per_page=10',
+    {
+      headers: {
+        accept: 'application/json',
+      },
+      ...init,
+    }
+  );
+  return await response.json();
 }
 
-type ExchangeList = Loadable<readonly Exchange[]>;
+function stopPropagation(event: React.MouseEvent<HTMLAnchorElement>) {
+  event.stopPropagation();
+}
 
 export function Index() {
-  const [exchangeList, setExchangeList] = useState<ExchangeList>({
-    status: LoadableStatus.Idle,
-  });
-
-  useEffect(() => {
-    setExchangeList({ status: LoadableStatus.Loading });
-
-    const controller = new AbortController();
-
-    listExchanges({ signal: controller.signal })
-      .then((response) => response.json())
-      .then((data) => {
-        setExchangeList({ status: LoadableStatus.Completed, data });
-      })
-      .catch((error) => {
-        setExchangeList({ status: LoadableStatus.Failed, error });
-      });
-
-    return () => {
-      controller.abort();
-    };
-  }, []);
-
+  const exchangeList = useQuery<readonly Exchange[]>(listExchanges);
   const router = useRouter();
 
   if (exchangeList.status === LoadableStatus.Idle) {
@@ -55,47 +38,52 @@ export function Index() {
     return (
       <table className="table">
         <thead>
-          <th>Name</th>
-          <th>Country</th>
-          <th>URL</th>
-          <th>Trust Rank</th>
-        </thead>
-        {exchangeList.data.map((exchange) => (
-          <tr
-            key={exchange.id}
-            className="hover focus-visible:bg-[hsl(var(--b2))] outline-none cursor-pointer"
-            onClick={() => router.push(`/exchanges/${exchange.id}`)}
-            onKeyDown={(event) => {
-              if ('Enter' === event.key) {
-                router.push(`/exchanges/${exchange.id}`);
-              }
-            }}
-            tabIndex={0}
-            role="link"
-          >
-            <td className="flex items-center">
-              <div className="avatar mr-2">
-                <div className="mask mask-squircle w-12 h-12">
-                  <img src={exchange.image} alt="" />
-                </div>
-              </div>
-
-              {exchange.name}
-            </td>
-            <td>{exchange.country}</td>
-            <td>
-              <a
-                href={exchange.url}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="link"
-              >
-                {exchange.url}
-              </a>
-            </td>
-            <td>{exchange.trust_score_rank}</td>
+          <tr>
+            <th>Name</th>
+            <th>Country</th>
+            <th>URL</th>
+            <th>Trust Rank</th>
           </tr>
-        ))}
+        </thead>
+        <tbody>
+          {exchangeList.data.map((exchange) => (
+            <tr
+              key={exchange.id}
+              className="hover focus-visible:bg-[hsl(var(--b2))] outline-none cursor-pointer"
+              onClick={() => router.push(`/exchanges/${exchange.id}`)}
+              onKeyDown={(event) => {
+                if ('Enter' === event.key) {
+                  router.push(`/exchanges/${exchange.id}`);
+                }
+              }}
+              tabIndex={0}
+              role="link"
+            >
+              <td className="flex items-center">
+                <div className="avatar mr-2">
+                  <div className="mask mask-squircle w-12 h-12">
+                    <img src={exchange.image} alt="" />
+                  </div>
+                </div>
+
+                {exchange.name}
+              </td>
+              <td>{exchange.country}</td>
+              <td>
+                <a
+                  href={exchange.url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="link"
+                  onClick={stopPropagation}
+                >
+                  {exchange.url}
+                </a>
+              </td>
+              <td>{exchange.trust_score_rank}</td>
+            </tr>
+          ))}
+        </tbody>
       </table>
     );
   }
