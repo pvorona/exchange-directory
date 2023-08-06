@@ -6,7 +6,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Welcome to exchange-directory!</title>
+        <title>Crypto Exchange Directory</title>
       </Head>
       <main className="h-full">
         <Component {...pageProps} />

@@ -1,5 +1,11 @@
 import { useRouter } from 'next/router';
-import { Exchange, LoadableStatus, ensureNever, useQuery } from '../../utils';
+import {
+  Exchange,
+  Loadable,
+  LoadableStatus,
+  ensureNever,
+  ensureString,
+} from '../../utils';
 import Link from 'next/link';
 import classNames from 'classnames';
 import {
@@ -8,6 +14,7 @@ import {
   TelegramIcon,
   FacebookIcon,
 } from '../../components';
+import { useState, useEffect } from 'react';
 
 async function getExchange(id: string, init?: RequestInit): Promise<Exchange> {
   const response = await fetch(
@@ -26,14 +33,40 @@ const labelClassName = 'font-bold pr-2 align-baseline whitespace-nowrap';
 
 export default function ExchangeDetailsPage() {
   const router = useRouter();
-  const exchange = useQuery<Exchange>(getExchange, router.query.id);
+  const [exchange, setExchange] = useState<Loadable<Exchange>>({
+    status: LoadableStatus.Idle,
+  });
+
+  useEffect(() => {
+    if (router.query.id === undefined) {
+      return;
+    }
+
+    setExchange({ status: LoadableStatus.Loading });
+
+    const controller = new AbortController();
+
+    getExchange(ensureString(router.query.id), { signal: controller.signal })
+      .then((data) => {
+        setExchange({ status: LoadableStatus.Completed, data });
+      })
+      .catch((error) => {
+        setExchange({ status: LoadableStatus.Failed, error });
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [router.query.id]);
 
   if (exchange.status === LoadableStatus.Idle) {
     return null;
   }
 
   if (exchange.status === LoadableStatus.Loading) {
-    return <div>Loading...</div>;
+    return (
+      <span className="loading loading-spinner loading-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+    );
   }
 
   if (exchange.status === LoadableStatus.Failed) {
@@ -55,13 +88,10 @@ export default function ExchangeDetailsPage() {
         twitter_handle,
       },
     } = exchange;
-    const hasAnySocialLink = Boolean(
-      telegram_url || facebook_url || reddit_url || twitter_handle
-    );
 
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="w-[528px] flex flex-col items-center bg-base-200 p-8 rounded-lg">
+        <div className="w-full h-full sm:h-auto sm:w-[528px] flex flex-col items-center bg-base-200 p-8 rounded-lg">
           <div className="avatar mb-8">
             <div className="mask mask-squircle w-12 h-12">
               <img src={image} alt="" />
@@ -103,33 +133,31 @@ export default function ExchangeDetailsPage() {
             </tbody>
           </table>
 
-          {hasAnySocialLink && (
-            <div className="flex mt-8 space-x-4">
-              {twitter_handle && (
-                <a href={`https://twitter.com/${twitter_handle}`}>
-                  <TwitterIcon />
-                </a>
-              )}
+          <div className="flex mt-auto sm:mt-8 space-x-4">
+            {twitter_handle && (
+              <a href={`https://twitter.com/${twitter_handle}`}>
+                <TwitterIcon />
+              </a>
+            )}
 
-              {reddit_url && (
-                <a href={reddit_url}>
-                  <RedditIcon />
-                </a>
-              )}
+            {reddit_url && (
+              <a href={reddit_url}>
+                <RedditIcon />
+              </a>
+            )}
 
-              {telegram_url && (
-                <a href={telegram_url}>
-                  <TelegramIcon />
-                </a>
-              )}
+            {telegram_url && (
+              <a href={telegram_url}>
+                <TelegramIcon />
+              </a>
+            )}
 
-              {facebook_url && (
-                <a href={facebook_url}>
-                  <FacebookIcon />
-                </a>
-              )}
-            </div>
-          )}
+            {facebook_url && (
+              <a href={facebook_url}>
+                <FacebookIcon />
+              </a>
+            )}
+          </div>
 
           <Link href="/">
             <a className="btn btn-primary mx-auto mt-8 w-full">Back</a>

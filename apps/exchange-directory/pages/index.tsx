@@ -1,4 +1,5 @@
-import { Exchange, LoadableStatus, ensureNever, useQuery } from '../utils';
+import { useState, useEffect } from 'react';
+import { Exchange, Loadable, LoadableStatus, ensureNever } from '../utils';
 import { useRouter } from 'next/router';
 
 async function listExchanges(init?: RequestInit): Promise<readonly Exchange[]> {
@@ -19,15 +20,39 @@ function stopPropagation(event: React.MouseEvent<HTMLAnchorElement>) {
 }
 
 export function Index() {
-  const exchangeList = useQuery<readonly Exchange[]>(listExchanges);
+  const [exchangeList, setExchangeList] = useState<
+    Loadable<readonly Exchange[]>
+  >({
+    status: LoadableStatus.Idle,
+  });
   const router = useRouter();
+
+  useEffect(() => {
+    setExchangeList({ status: LoadableStatus.Loading });
+
+    const controller = new AbortController();
+
+    listExchanges({ signal: controller.signal })
+      .then((data) => {
+        setExchangeList({ status: LoadableStatus.Completed, data });
+      })
+      .catch((error) => {
+        setExchangeList({ status: LoadableStatus.Failed, error });
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
   if (exchangeList.status === LoadableStatus.Idle) {
     return null;
   }
 
   if (exchangeList.status === LoadableStatus.Loading) {
-    return <div>Loading...</div>;
+    return (
+      <span className="loading loading-spinner loading-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+    );
   }
 
   if (exchangeList.status === LoadableStatus.Failed) {
